@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Global Consult</title>
+  <desc id="desc">Consultanta strategica pentru companii</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f766e"/>
+      <stop offset="1" stop-color="#172026"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="72" y="72" width="1056" height="486" rx="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.24)"/>
+  <text x="112" y="178" fill="#f4c46a" font-family="Arial, sans-serif" font-size="34" font-weight="700">GLOBAL-CONSULT.RO</text>
+  <text x="112" y="292" fill="#ffffff" font-family="Arial, sans-serif" font-size="82" font-weight="800">Global Consult</text>
+  <text x="112" y="382" fill="#e8f3f1" font-family="Arial, sans-serif" font-size="46" font-weight="700">Consultanta strategica pentru companii</text>
+  <text x="112" y="464" fill="#cfe4df" font-family="Arial, sans-serif" font-size="30">Strategie | Operatiuni | Digital | Finante</text>
+  <circle cx="996" cy="190" r="72" fill="rgba(244,196,106,0.85)"/>
+  <circle cx="996" cy="356" r="112" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.24)"/>
+</svg>

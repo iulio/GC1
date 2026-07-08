@@ -1,0 +1,35 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build package
+        run: zip -r deploy-package.zip passenger_wsgi.py public README.md
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Upload release
+        run: scp -i ~/.ssh/deploy_key -P "${{ secrets.SSH_PORT }}" deploy-package.zip "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/global-consult-release.zip"
+
+      - name: Activate release
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" <<'REMOTE'
+          set -e
+          mkdir -p "${{ secrets.REMOTE_PATH }}"
+          unzip -o /tmp/global-consult-release.zip -d "${{ secrets.REMOTE_PATH }}"
+          mkdir -p "${{ secrets.REMOTE_PATH }}/tmp"
+          touch "${{ secrets.REMOTE_PATH }}/tmp/restart.txt"
+          rm -f /tmp/global-consult-release.zip
+          REMOTE
