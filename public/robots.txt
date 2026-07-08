@@ -1,4 +1,20 @@
 User-agent: *
 Allow: /
 
+# Ensure Generative AI engines can crawl high-value semantic content
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
 Sitemap: https://global-consult.ro/sitemap.xml

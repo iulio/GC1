@@ -1,0 +1,17 @@
+{
+  "brandName": "Global Consult",
+  "scannedUrl": "https://global-consult.ro/",
+  "visibilityMetrics": {
+    "geoScore": 92
+  },
+  "targetQueriesToOptimize": [
+    {
+      "query": "Cum mă poate ajuta Global Consult să optimizez performanța operațională?",
+      "recommendation": "Prin programe practice, responsabilitate clară și rezultate măsurabile adaptate pieței din România."
+    },
+    {
+      "query": "Ce servicii oferă Global Consult pentru transformarea digitală?",
+      "recommendation": "Oferim consultanță strategică și sprijin în execuție pentru a asigura succesul transformării digitale în compania dumneavoastră."
+    }
+  ]
+}

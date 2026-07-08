@@ -1,3 +1,4 @@
+import json
 import mimetypes
 import os
 import smtplib
@@ -11,6 +12,19 @@ from urllib.parse import parse_qs
 BASE_DIR = Path(__file__).resolve().parent
 PUBLIC_DIR = BASE_DIR / "public"
 CONTACT_EMAIL = "office@global-consult.ro"
+
+# Load GEO-SEO optimizations
+def load_geo_optimizations():
+    report_path = BASE_DIR / 'geo_seo_report.json'
+    if report_path.exists():
+        try:
+            with open(report_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading geo_seo_report.json: {e}", file=sys.stderr)
+    return None
+
+GEO_DATA = load_geo_optimizations()
 
 # SMTP settings for the contact form.
 # Replace SMTP_PASSWORD with the real mailbox password before uploading to the server.
@@ -179,11 +193,60 @@ def application(environ, start_response):
         target = PUBLIC_DIR / "index.html"
 
     content_type = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+    body_bytes = target.read_bytes()
+
     if target.name == "index.html":
         content_type = "text/html; charset=utf-8"
+        html_content = body_bytes.decode('utf-8')
+        
+        # 1. Dynamic JSON-LD Schema Engine (Task 2.1)
+        json_ld_markup = ""
+        faq_html = ""
+
+        if GEO_DATA:
+            metrics = GEO_DATA.get("visibilityMetrics", {})
+            brand_name = GEO_DATA.get('brandName', 'Global Consult')
+            scanned_url = GEO_DATA.get('scannedUrl', 'https://global-consult.ro/')
+            
+            json_ld_markup = f"""
+    <!-- Automated JSON-LD Injection -->
+    <script type="application/ld+json">
+    {{
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "{brand_name}",
+      "url": "{scanned_url}",
+      "description": "Optimized presence with a GEO Score of {metrics.get('geoScore', 0)}%"
+    }}
+    </script>
+    <!-- End Automated JSON-LD Injection -->"""
+
+            faq_items = GEO_DATA.get("targetQueriesToOptimize", [])
+            if faq_items:
+                faq_html = "<section id='faq' style='padding: 4rem 2rem; max-width: 800px; margin: 0 auto;'><h2>Întrebări Frecvente</h2><div class='faq-container'>"
+                for item in faq_items:
+                    faq_html += f"""
+                    <div class="faq-item" style="margin-bottom: 1.5rem;" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                        <strong itemprop="name">Q: {item.get('query')}</strong>
+                        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                            <p itemprop="text" style="margin-top: 0.5rem; color: #4a5568;">A: {item.get('recommendation')}</p>
+                        </div>
+                    </div>
+                    """
+                faq_html += "</div></section>"
+        
+        # Inject into HTML
+        if "<!-- GEO_JSON_LD_PLACEHOLDER -->" in html_content:
+            html_content = html_content.replace("<!-- GEO_JSON_LD_PLACEHOLDER -->", json_ld_markup)
+        
+        if "<!-- GEO_FAQ_PLACEHOLDER -->" in html_content:
+            html_content = html_content.replace("<!-- GEO_FAQ_PLACEHOLDER -->", faq_html)
+            
+        body_bytes = html_content.encode('utf-8')
+
     elif target.suffix == ".css":
         content_type = "text/css; charset=utf-8"
     elif target.suffix == ".js":
         content_type = "application/javascript; charset=utf-8"
 
-    return _response(start_response, "200 OK", content_type, target.read_bytes())
+    return _response(start_response, "200 OK", content_type, body_bytes)
